@@ -1,0 +1,19 @@
+{
+  "name": "parks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "knex": "^0.16.3",
+    "moment": "^2.24.0",
+    "mysql": "^2.16.0",
+    "mysql2": "^1.6.4",
+    "themeparks": "^4.7.11",
+    "weather-js": "^2.0.0"
+  }
+}
