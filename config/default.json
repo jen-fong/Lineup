@@ -3,11 +3,14 @@
     "host": "/park-data/app"
   },
   "database": {
-    "user": "root",
-    "password": null,
-    "database": "parkData",
-    "timezone": "UTC",
-    "host": "127.0.0.1",
-    "port": 3306
+    "client": "mysql",
+    "connection": {
+      "user": "root",
+      "password": null,
+      "database": "parkData",
+      "timezone": "UTC",
+      "host": "127.0.0.1",
+      "port": 3306
+    }
   }
 }
