@@ -4,8 +4,8 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const exphbs = require('express-handlebars')
 const config = require('config')
-const disneyRouter = require('./api/disney.js')
-const universalRouter = require('./api/universal.js')
+const ridesRouter = require('./api/rides.js')
+const parksRouter = require('./api/parks.js')
 
 const app = express()
 const router = express.Router()
@@ -21,9 +21,8 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use((req, res, next) => {
-  console.log(path.join(
-    __dirname, '/node_modules/font-awesome/css'
-  ))
+  // log here?
+
   next()
 })
 
@@ -34,19 +33,22 @@ app.set('views', views)
 
 app.get('/', (req, res) => res.redirect(context))
 
-router.use(express.static(path.join(__dirname, '/public')))
+router.use(express.static(path.join(__dirname, '../../public')))
 router.use('/css/bootstrap', express.static(path.join(
   __dirname, '../../node_modules/bootstrap/dist/css'
 )))
 router.use('/css/font-awesome', express.static(path.join(
   __dirname, '../../node_modules/font-awesome/css'
 )))
-router.use('/css/font-awesome', express.static(path.join(
+router.use('/css/fonts', express.static(path.join(
   __dirname, '../../node_modules/font-awesome/fonts'
 )))
+router.use('/css/react-vis', express.static(path.join(
+  __dirname, '../../node_modules/react-vis/dist'
+)))
 
-router.use('/api/disney', disneyRouter)
-router.use('/api/universal', universalRouter)
+router.use('/api/parks', parksRouter)
+router.use('/api/parks', ridesRouter)
 router.get('/*', (req, res) => {
   res.render('home')
 })
