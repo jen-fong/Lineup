@@ -66,7 +66,9 @@ function insertOperatingHours (schedule, parkId) {
     specialHoursOpen: specialOperatingHours && moment(specialOperatingHours[0].openingTime).toDate(),
     specialHoursClose: specialOperatingHours && moment(specialOperatingHours[0].closingTime).toDate(),
     theDate: today,
-    parkId: parkId
+    parkId: parkId,
+    createdAt: moment().toDate(),
+    updatedAt: moment().toDate()
   })
 }
 
@@ -157,7 +159,9 @@ const parkWaitTimes = parks.map(park => {
             if (!dbRide || !dbRide.length) {
               return knex('ride').insert({
                 name: ride.name,
-                libId: ride.id
+                libId: ride.id,
+                createdAt: moment().toDate(),
+                updatedAt: moment().toDate()
               })
             }
             return [dbRide[0].id]
@@ -169,6 +173,7 @@ const parkWaitTimes = parks.map(park => {
               rideId: dbRide[0],
               lastUpdated: moment(ride.lastUpdate).toDate(),
               createdAt: moment().toDate(),
+              updatedAt: moment().toDate(),
               status: ride.status,
               fastPassStart: ride.fastPassReturnTime &&
                 moment(ride.fastPassReturnTime.startTime).toDate() || null,
