@@ -46,6 +46,9 @@ router.use('/css/fonts', express.static(path.join(
 router.use('/css/react-vis', express.static(path.join(
   __dirname, '../../node_modules/react-vis/dist'
 )))
+router.use('/css/datepicker', express.static(path.join(
+  __dirname, '../../node_modules/react-datepicker/dist'
+)))
 
 router.use('/api/parks', parksRouter)
 router.use('/api/parks', ridesRouter)

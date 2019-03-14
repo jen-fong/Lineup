@@ -14,4 +14,15 @@ router.get('/:parkId/rides/:rideId/weekdays', wrap((req, res) => {
   })
 }))
 
+router.get('/:parkId/rides/:rideId/date', wrap((req, res) => {
+  const { parkId, rideId } = req.params
+  const { date } = req.query
+
+  return ridesService.fetchRideStatsByDate({
+    rideId,
+    parkId,
+    date
+  })
+}))
+
 module.exports = router

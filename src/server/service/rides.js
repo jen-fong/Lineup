@@ -39,6 +39,30 @@ function fetchRideStatsForWeekday (where) {
   .orderBy('hour', 'asc')
 }
 
+function fetchRideStatsByDate (query) {
+  const { rideId, date } = query
+  console.log(rideId)
+  const dateQuery = date + '%'
+  console.log(dateQuery)
+  return knex('waitTimes').select(knex.raw(
+    'park.name as parkName, ' +
+    'ride.name as rideName, ' +
+    'waitTimes.wait as wait, ' +
+    'convert_tz(waitTimes.createdAt, "+00:00", "SYSTEM") as time, ' +
+    'waitTimes.status as status, ' +
+    'waitTimes.conditions, ' +
+    'waitTimes.temperature, ' +
+    'waitTimes.humidity'
+  ))
+  .leftJoin('park', 'park.id', 'waitTimes.parkId')
+  .leftJoin('ride', 'ride.id', 'waitTimes.rideId')
+  .whereRaw('rideId = ?', [rideId])
+  .andWhere('wait', '>', 0)
+  .andWhereRaw('convert_tz(waitTimes.createdAt, "+00:00", "SYSTEM") like ?', [dateQuery])
+  .orderBy('waitTimes.createdAt', 'asc')
+}
+
 module.exports = {
-  fetchRideStatsForWeekday
+  fetchRideStatsForWeekday,
+  fetchRideStatsByDate
 }
