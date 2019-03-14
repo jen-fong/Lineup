@@ -4,10 +4,7 @@ import Immutable from 'seamless-immutable'
 const initialState = Immutable({
   park: null,
   all: [],
-  selection: {
-    option: null,
-    type: null
-  }
+  ride: null
 })
 
 export default function (state = initialState, action) {
@@ -17,8 +14,9 @@ export default function (state = initialState, action) {
         all: action.payload
       })
     case constants.SELECTION_SET:
+      console.log(action)
       return state.merge({
-        selection: action.selection
+        ride: action.selection.id
       })
     case constants.PARK_SET:
       return state.merge({

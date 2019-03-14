@@ -3,11 +3,8 @@ import Select from 'react-select'
 
 class SelectPicker extends React.PureComponent {
   handleChange = option => {
-    const { handleChange, name } = this.props
-    handleChange({
-      option: option.id,
-      type: name
-    })
+    const { handleChange } = this.props
+    handleChange(option)
   }
   render () {
     const { options, selectedOption, name } = this.props
@@ -17,7 +14,7 @@ class SelectPicker extends React.PureComponent {
         <Select
           name={name}
           options={options.asMutable()}
-          value={selectedOption.id}
+          value={selectedOption}
           onChange={this.handleChange}
           getOptionLabel={option => option.name}
           getOptionValue={option => option.id}

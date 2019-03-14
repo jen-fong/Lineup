@@ -1,4 +1,5 @@
 export const PARKS_GET = 'PARKS_GET'
 export const SELECTION_SET = 'SELECTION_SET'
 export const PARK_SET = 'PARK_SET'
-export const RIDES_WEEKDAYS_GET = 'RIDES_WEEKDAYS_GET'
+export const RIDE_WEEKDAYS_GET = 'RIDE_WEEKDAYS_GET'
+export const RIDE_DATE_GET = 'RIDE_DATE_GET'

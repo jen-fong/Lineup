@@ -4,6 +4,7 @@ import * as ridesActions from '../../actions/ridesActions.js'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import ParkLink from './ParkLink.jsx'
+import moment from 'moment'
 
 class NavSection extends React.PureComponent {
   render () {
@@ -33,9 +34,11 @@ class NavBar extends React.PureComponent {
   }
   handleRideSelection = option => {
     const { parksActions, ridesActions, park } = this.props
+    const today = moment().format('YYYY-MM-DD')
 
     parksActions.setSelection(option)
-    ridesActions.fetchStatsForWeekdays(park, option.option)
+    ridesActions.fetchStatsForWeekdays(park, option.id)
+    ridesActions.fetchStatsByDate(park, option.id, today)
   }
   render () {
     const { parksActions, ...props } = this.props
