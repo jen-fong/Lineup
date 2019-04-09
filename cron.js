@@ -4,11 +4,12 @@ const weather = require('weather-js')
 const knex = require('knex')({
   client: 'mysql',
   connection: {
-    host: '127.0.0.1',
     user: 'root',
     password: null,
     database: 'parkData',
-    timezone: 'UTC'
+    timezone: 'UTC',
+    host: '127.0.0.1',
+    port: 3306
   }
 })
 
@@ -57,7 +58,7 @@ function getParkSchedule (themePark) {
 }
 
 function insertOperatingHours (schedule, parkId) {
-  const { openingTime, closingTime, specialOperatingHours, park } = schedule
+  const { openingTime, closingTime, specialOperatingHours } = schedule
 
   return knex('operatingHours').insert({
     parkOpen: moment(openingTime).toDate(),
@@ -113,6 +114,17 @@ function checkIfParkIsOpen (opHours) {
   return isOpen || isSpecialHours
 }
 
+function determineRideType (ride) {
+  if (ride.active && ride.waitTime === 0) {
+    return 'activity'
+  } else if (ride.active && ride.waitTime > 0) {
+    return 'ride'
+  } else if (!ride.active && ride.refurbishment) {
+    return 'ride'
+  }
+  return null
+}
+
 let currentWeather
 const parkWaitTimes = parks.map(park => {
   console.log('creating park', park)
@@ -156,19 +168,36 @@ const parkWaitTimes = parks.map(park => {
             libId: ride.id
           })
           .then(dbRide => {
-            if (!dbRide || !dbRide.length) {
+            const rideType = determineRideType(ride)
+            // only insert if ride does not exist and if ride is active at park
+            if (!dbRide || !dbRide.length && ride.active) {
               return knex('ride').insert({
                 name: ride.name,
                 libId: ride.id,
+                type: rideType,
                 createdAt: moment().toDate(),
                 updatedAt: moment().toDate()
               })
             }
+
+            // sometimes disney changes the name to show closures. This will
+            // update our db so it shows up properly. We also update the ride
+            // since it is very difficult to determine whether something is a
+            // ride or show
+            if (dbRide[0].name !== ride.name || rideType !== dbRide[0].type) {
+              return knex('ride')
+              .where({ libId: ride.id })
+              .update({
+                type: rideType,
+                name: ride.name
+              })
+              .then(() => [dbRide[0].id])
+            }
+            
             return [dbRide[0].id]
           })
           .then(dbRide => {
             return knex('waitTimes').insert({
-              parkId: dbPark[0].id,
               wait: ride.waitTime || 0,
               rideId: dbRide[0],
               lastUpdated: moment(ride.lastUpdate).toDate(),
@@ -185,7 +214,7 @@ const parkWaitTimes = parks.map(park => {
             })
           })
         })
-        console.log('inserting rides', insertRideTimes.length, park)
+        console.log('inserting/updating rides', insertRideTimes.length, park)
         return Promise.all(insertRideTimes)
       })
     })
