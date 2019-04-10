@@ -46,7 +46,8 @@ function getParkSchedule (themePark) {
         return schedule
       }
     })[0]
-    const specialOperatingHours = themePark.Schedule[scheduleSymbols[1]].get(todaysSchedule[0])
+    const specialOperatingHours = themePark.Schedule[scheduleSymbols[1]].get(
+      todaysSchedule[0])
     const { openingTime, closingTime } = todaysSchedule[1]
 
     return {
@@ -63,9 +64,12 @@ function insertOperatingHours (schedule, parkId) {
   return knex('operatingHours').insert({
     parkOpen: moment(openingTime).toDate(),
     parkClose: moment(closingTime).toDate(),
-    specialHours: specialOperatingHours && specialOperatingHours[0].type || null,
-    specialHoursOpen: specialOperatingHours && moment(specialOperatingHours[0].openingTime).toDate(),
-    specialHoursClose: specialOperatingHours && moment(specialOperatingHours[0].closingTime).toDate(),
+    specialHours: specialOperatingHours && specialOperatingHours[0].type ||
+      null,
+    specialHoursOpen: specialOperatingHours &&
+      moment(specialOperatingHours[0].openingTime).toDate(),
+    specialHoursClose: specialOperatingHours &&
+      moment(specialOperatingHours[0].closingTime).toDate(),
     theDate: today,
     parkId: parkId,
     createdAt: moment().toDate(),
