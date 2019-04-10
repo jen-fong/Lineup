@@ -119,10 +119,10 @@ function determineRideType (ride) {
     return 'activity'
   } else if (ride.active && ride.waitTime > 0) {
     return 'ride'
-  } else if (!ride.active && ride.refurbishment) {
+  } else if (!ride.active && (ride.refurbishment || ride.status === 'Down')) {
     return 'ride'
   }
-  return null
+  return 'activity'
 }
 
 let currentWeather
@@ -193,7 +193,6 @@ const parkWaitTimes = parks.map(park => {
               })
               .then(() => [dbRide[0].id])
             }
-            
             return [dbRide[0].id]
           })
           .then(dbRide => {
