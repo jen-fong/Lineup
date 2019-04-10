@@ -1,15 +1,15 @@
 const knex = require('../database/knex.js')
 
 function fetchRideStatsForWeekday (where) {
-  const { rideId, searchText } = where
+  const { rideId, day } = where
 
   let hasSearchDay = false
-  if (searchText && searchText.trim()) {
+  if (day && day.trim()) {
     hasSearchDay = true
   }
 
   const dayQuery = hasSearchDay
-    ? ['dayname(operatingHours.theDate) = ?', [searchText]] : ['']
+    ? ['dayname(operatingHours.theDate) = ?', [day]] : ['']
 
   return knex('waitTimes').select(knex.raw(
     'park.name as parkName, ' +
@@ -21,10 +21,10 @@ function fetchRideStatsForWeekday (where) {
     'max(wait) as maxWait,' +
     'count(*) as count'
   ))
-  .leftJoin('park', 'park.id', 'waitTimes.parkId')
   .leftJoin('ride', 'ride.id', 'waitTimes.rideId')
+  .leftJoin('park', 'park.id', 'ride.parkId')
   .leftJoin('operatingHours', function () {
-    this.on('operatingHours.parkId', '=', 'waitTimes.parkId')
+    this.on('operatingHours.parkId', '=', 'ride.parkId')
     .andOn(knex.raw(
       'operatingHours.theDate = date_format(convert_tz(waitTimes.createdAt, "+00:00", "SYSTEM"), "%Y-%m-%d")'))
   })
@@ -41,9 +41,8 @@ function fetchRideStatsForWeekday (where) {
 
 function fetchRideStatsByDate (query) {
   const { rideId, date } = query
-  console.log(rideId)
   const dateQuery = date + '%'
-  console.log(dateQuery)
+
   return knex('waitTimes').select(knex.raw(
     'park.name as parkName, ' +
     'ride.name as rideName, ' +
@@ -54,11 +53,13 @@ function fetchRideStatsByDate (query) {
     'waitTimes.temperature, ' +
     'waitTimes.humidity'
   ))
-  .leftJoin('park', 'park.id', 'waitTimes.parkId')
   .leftJoin('ride', 'ride.id', 'waitTimes.rideId')
+  .leftJoin('park', 'park.id', 'ride.parkId')
   .whereRaw('rideId = ?', [rideId])
   .andWhere('wait', '>', 0)
-  .andWhereRaw('convert_tz(waitTimes.createdAt, "+00:00", "SYSTEM") like ?', [dateQuery])
+  .andWhereRaw(
+    'convert_tz(waitTimes.createdAt, "+00:00", "SYSTEM") like ?', [dateQuery]
+  )
   .orderBy('waitTimes.createdAt', 'asc')
 }
 
