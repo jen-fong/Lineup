@@ -105,7 +105,9 @@ class StatsByDate extends React.PureComponent {
               selected={selectedDate.toDate()}
             />
 
-            <GraphTitle title={`Wait Times for ${selectedDate.format('YYYY-MM-DD')}`} />
+            <GraphTitle
+              title={`Wait Times for ${selectedDate.format('YYYY-MM-DD')}`}
+            />
             <FlexibleXYPlot height={600} xType='ordinal'>
               <VerticalGridLines />
               <HorizontalGridLines />

@@ -5,7 +5,7 @@ const ridesService = require('../service/rides.js')
 
 router.get('/:parkId/rides/:rideId/weekdays', wrap((req, res) => {
   const { parkId, rideId } = req.params
-  const { q, day } = req.query
+  const { day } = req.query
 
   return ridesService.fetchRideStatsForWeekday({
     rideId,

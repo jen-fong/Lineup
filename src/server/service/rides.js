@@ -15,7 +15,8 @@ function fetchRideStatsForWeekday (where) {
     'park.name as parkName, ' +
     'ride.name as rideName, ' +
     'dayname(operatingHours.theDate) as weekday, ' +
-    'date_format(convert_tz(waitTimes.createdAt, "+00:00", "SYSTEM"), "%H") as hour, ' +
+    'date_format(convert_tz(waitTimes.createdAt, "+00:00", "SYSTEM"), "%H")' +
+      'as hour, ' +
     'avg(wait) as averageWait, ' +
     'min(wait) as minWait, ' +
     'max(wait) as maxWait,' +
@@ -26,7 +27,8 @@ function fetchRideStatsForWeekday (where) {
   .leftJoin('operatingHours', function () {
     this.on('operatingHours.parkId', '=', 'ride.parkId')
     .andOn(knex.raw(
-      'operatingHours.theDate = date_format(convert_tz(waitTimes.createdAt, "+00:00", "SYSTEM"), "%Y-%m-%d")'))
+      'operatingHours.theDate = date_format(convert_tz(' +
+      'waitTimes.createdAt, "+00:00", "SYSTEM"), "%Y-%m-%d")'))
   })
   .whereRaw('rideId = ?', [rideId])
   .andWhere('wait', '>', 0)
