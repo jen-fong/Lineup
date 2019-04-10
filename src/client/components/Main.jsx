@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import moment from 'moment'
 import DatePicker from 'react-datepicker'
 import * as ridesActions from '../actions/ridesActions.js'
+import Select from 'react-select'
 import {
   FlexibleXYPlot,
   LineMarkSeries,
@@ -145,7 +146,7 @@ class StatsByDate extends React.PureComponent {
   }
 }
 
-class AllWeekDaysStats extends React.PureComponent {
+class AllWeekdaysStats extends React.PureComponent {
   render () {
     const { allWeekdaysStats, openHint, removeHint, hoveredCell } = this.props
 
@@ -195,7 +196,7 @@ class AllWeekDaysStats extends React.PureComponent {
             </FlexibleXYPlot>
           </div>
 
-          <div className='col-md-2'>
+          <div className='col-md-2 mt-5'>
             <DiscreteColorLegend
               width={250}
               items={days.map((day, i) =>
@@ -213,13 +214,127 @@ class AllWeekDaysStats extends React.PureComponent {
   }
 }
 
-const AllWeekDaysStatsWithHint = HintHOC(AllWeekDaysStats)
+class WeekdayStats extends React.PureComponent {
+  constructor (props) {
+    super(props)
+    const today = moment().format('dddd')
+    this.state = {
+      day: {
+        value: today,
+        label: today
+      }
+    }
+  }
+  handleDayChange = option => {
+    this.setState({
+      day: option
+    })
+  }
+  render () {
+    const dayOption = this.state.day
+    const day = dayOption.value
+    const {
+      allWeekdaysStats,
+      allWeekdaysStatsMax,
+      allWeekdaysStatsMin,
+      openHint,
+      removeHint,
+      hoveredCell
+    } = this.props
+
+    return (
+      <div className='col-md-12 mt-5'>
+        <div className='row'>
+          <div className='col-md-4'>
+            <Select
+              options={days.map(day => ({ label: day, value: day }))}
+              value={dayOption}
+              onChange={this.handleDayChange}
+            />
+          </div>
+        </div>
+
+        <div className='row'>
+          <div className='col-md-10'>
+            <GraphTitle title={`Wait Times Average for ${day}`} />
+            <FlexibleXYPlot height={600}>
+              <VerticalGridLines />
+              <HorizontalGridLines />
+
+              <LineMarkSeries
+                data={allWeekdaysStats[day]}
+                onValueMouseOver={openHint}
+                onValueMouseOut={removeHint}
+                curve='monotoneX'
+              />
+
+              <LineMarkSeries
+                data={allWeekdaysStatsMax[day]}
+                onValueMouseOver={openHint}
+                onValueMouseOut={removeHint}
+                curve='monotoneX'
+              />
+
+              <LineMarkSeries
+                data={allWeekdaysStatsMin[day]}
+                onValueMouseOver={openHint}
+                onValueMouseOut={removeHint}
+                curve='monotoneX'
+              />
+
+              <XAxis
+                title='Hour (24)'
+                tickFormat={value => {
+                  // only show as full hour
+                  if (value % 1 === 0) {
+                    return value
+                  }
+                }}
+              />
+              <YAxis title='Wait times (minutes)' />
+              {hoveredCell && (
+                <Hint
+                  value={hoveredCell}
+                  format={() => [{
+                    title: 'hour',
+                    value: hoveredCell.x
+                  }, {
+                    title: 'wait time',
+                    value: hoveredCell.y
+                  }]}
+                />
+              )}
+            </FlexibleXYPlot>
+          </div>
+
+          <div className='col-md-2 mt-5'>
+            <DiscreteColorLegend
+              width={250}
+              items={[{
+                title: 'average'
+              }, {
+                title: 'max'
+              }, {
+                title: 'min'
+              }]}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+const AllWeekdaysStatsWithHint = HintHOC(AllWeekdaysStats)
 const StatsByDateWithHint = HintHOC(StatsByDate)
+const WeekdayStatsWithHint = HintHOC(WeekdayStats)
 
 class Main extends React.PureComponent {
   render () {
     const {
       allWeekdaysStats,
+      allWeekdaysStatsMax,
+      allWeekdaysStatsMin,
       byDate,
       ridesActions,
       ride,
@@ -229,22 +344,34 @@ class Main extends React.PureComponent {
 
     return (
       <div className='col-md-10 offset-md-2 mt-5'>
-        {!weekdays.length && <p>Select a ride from the left to begin</p>}
+        {!ride && !park && <p>Select a ride from the left to begin</p>}
 
-        <div className='row'>
-          <StatsByDateWithHint
-            statsByDate={byDate}
-            ridesActions={ridesActions}
-            rideId={ride}
-            parkId={park}
-          />
-        </div>
+        {!!weekdays.length && (
+          <React.Fragment>
+            <div className='row mt-5'>
+              <StatsByDateWithHint
+                statsByDate={byDate}
+                ridesActions={ridesActions}
+                rideId={ride}
+                parkId={park}
+              />
+            </div>
 
-        <div className='row'>
-          <AllWeekDaysStatsWithHint
-            allWeekdaysStats={allWeekdaysStats}
-          />
-        </div>
+            <div className='row mt-5'>
+              <AllWeekdaysStatsWithHint
+                allWeekdaysStats={allWeekdaysStats}
+              />
+            </div>
+
+            <div className='row mt-5'>
+              <WeekdayStatsWithHint
+                allWeekdaysStats={allWeekdaysStats}
+                allWeekdaysStatsMax={allWeekdaysStatsMax}
+                allWeekdaysStatsMin={allWeekdaysStatsMin}
+              />
+            </div>
+          </React.Fragment>
+        )}
       </div>
     )
   }
@@ -265,8 +392,8 @@ function xyByWeekDay (data, xKey, yKey) {
   return data.reduce((accum, item) => {
     const byDay = accum[item.weekday]
     const toXY = {
-      x: item.hour,
-      y: item.averageWait
+      x: item[xKey],
+      y: item[yKey]
     }
 
     if (byDay) {
@@ -279,12 +406,14 @@ function xyByWeekDay (data, xKey, yKey) {
 }
 
 function mapStateToProps (state) {
-  console.log()
+  const { rideStats, parks } = state
   return {
-    allWeekdaysStats: xyByWeekDay(state.rideStats.allWeekdays, 'hour', 'averageWait'),
-    byDate: createXY(state.rideStats.byDate, 'time', 'wait'),
-    park: state.parks.park,
-    ride: state.parks.ride
+    allWeekdaysStats: xyByWeekDay(rideStats.allWeekdays, 'hour', 'averageWait'),
+    allWeekdaysStatsMax: xyByWeekDay(rideStats.allWeekdays, 'hour', 'maxWait'),
+    allWeekdaysStatsMin: xyByWeekDay(rideStats.allWeekdays, 'hour', 'minWait'),
+    byDate: createXY(rideStats.byDate, 'time', 'wait'),
+    park: parks.park,
+    ride: parks.ride
   }
 }
 

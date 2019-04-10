@@ -1,0 +1,25 @@
+.sidebar-heading {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  padding: 48px 0 0;
+  font-size: 0.875rem;
+}
+.sidebar-sticky {
+  position: sticky;
+  height: calc(100vh - 48px);
+  padding-top: 0.5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.sidebar .nav-link {
+  color: #f8f9fa;
+  font-weight: 500;
+}

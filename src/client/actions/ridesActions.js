@@ -1,12 +1,15 @@
 import * as constants from '../constants.js'
 import request from './request.js'
 
-export const fetchStatsForWeekdays = (parkId, rideId) => dispatch => {
+export const fetchStatsForWeekdays = (parkId, rideId, day) => dispatch => {
   return dispatch({
     type: constants.RIDE_WEEKDAYS_GET,
     payload: request({
       method: 'GET',
-      url: `/parks/${parkId}/rides/${rideId}/weekdays`
+      url: `/parks/${parkId}/rides/${rideId}/weekdays`,
+      params: {
+        day
+      }
     })
   })
 }
