@@ -6,6 +6,7 @@ import AllView from './AllView.jsx'
 import MonthsView from './MonthsView.jsx'
 import WeekView from './WeekView.jsx'
 import DateView from './DateView.jsx'
+import * as selectors from '../selectors'
 
 function getView (view) {
   const views = {
@@ -100,51 +101,18 @@ const Main = props => {
   )
 }
 
-// TODO move to selectors
-
-// converts an array of objects to object assuming no repeating x and y keys
-// in the array
-function createXY (data, xKey, yKey) {
-  return data.map(item => {
-    return {
-      x: item[xKey],
-      y: item[yKey]
-    }
-  })
-}
-
-// converts an array of objects to object given parameters
-function xyByKey (data, xKey, yKey, useKey) {
-  return data.reduce((accum, item) => {
-    const useAsKey = item[useKey]
-    const byDay = accum[useAsKey]
-    const toXY = {
-      x: item[xKey],
-      y: item[yKey]
-    }
-
-    if (byDay) {
-      accum[useAsKey].push(toXY)
-    } else {
-      accum[useAsKey] = [toXY]
-    }
-    return accum
-  }, {})
-}
-
 function mapStateToProps (state) {
-  const { rideStats, parks } = state
+  const { parks } = state
   return {
-    weekdaysStats: xyByKey(
-      rideStats.weekdays, 'hour', 'averageWait', 'weekday'),
-    weekdaysStatsMax: xyByKey(rideStats.weekdays, 'hour', 'maxWait', 'weekday'),
-    weekdaysStatsMin: xyByKey(rideStats.weekdays, 'hour', 'minWait', 'weekday'),
-    byDate: createXY(rideStats.byDate, 'time', 'wait'),
+    weekdaysStats: selectors.getWeekdays(state),
+    weekdaysStatsMax: selectors.getWeekdaysMax(state),
+    weekdaysStatsMin: selectors.getWeekdayMin(state),
+    byDate: selectors.getByDate(state),
     park: parks.park,
     ride: parks.ride,
-    monthsStats: createXY(rideStats.months, 'month', 'averageWait'),
-    monthsStatsMax: createXY(rideStats.months, 'month', 'maxWait'),
-    monthsStatsMin: createXY(rideStats.months, 'month', 'minWait')
+    monthsStats: selectors.getMonths(state),
+    monthsStatsMax: selectors.getMonthsMax(state),
+    monthsStatsMin: selectors.getMonthsMin(state)
   }
 }
 

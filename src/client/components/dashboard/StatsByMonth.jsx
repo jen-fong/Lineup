@@ -33,6 +33,7 @@ function StatsByMonth (props) {
       stats={stats}
       statsMax={statsMax}
       statsMin={statsMin}
+      graphTitle='Wait Times Comparison by Month'
       tickFormat={returnMonthName}
       yTitle='Wait times by month'
       xTitle='Months'
