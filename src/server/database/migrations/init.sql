@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.25)
 # Database: parkData
-# Generation Time: 2019-04-10 15:28:21 +0000
+# Generation Time: 2019-04-11 14:27:00 +0000
 # ************************************************************
 
 
@@ -20,12 +20,12 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
-# Dump of table operatingHours
+# Dump of table operatingHour
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `operatingHours`;
+DROP TABLE IF EXISTS `operatingHour`;
 
-CREATE TABLE `operatingHours` (
+CREATE TABLE `operatingHour` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `parkOpen` datetime DEFAULT NULL,
   `parkClose` datetime DEFAULT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE `operatingHours` (
   `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `operatinghours_ibfk_1` (`parkId`),
-  CONSTRAINT `operatinghours_ibfk_1` FOREIGN KEY (`parkId`) REFERENCES `park` (`id`)
+  CONSTRAINT `operatinghour_ibfk_1` FOREIGN KEY (`parkId`) REFERENCES `park` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -79,12 +79,12 @@ CREATE TABLE `ride` (
 
 
 
-# Dump of table waitTimes
+# Dump of table waitTime
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `waitTimes`;
+DROP TABLE IF EXISTS `waitTime`;
 
-CREATE TABLE `waitTimes` (
+CREATE TABLE `waitTime` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `rideId` bigint(20) NOT NULL,
   `wait` int(5) NOT NULL,

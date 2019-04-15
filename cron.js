@@ -61,7 +61,7 @@ function getParkSchedule (themePark) {
 function insertOperatingHours (schedule, parkId) {
   const { openingTime, closingTime, specialOperatingHours } = schedule
 
-  return knex('operatingHours').insert({
+  return knex('operatingHour').insert({
     parkOpen: moment(openingTime).toDate(),
     parkClose: moment(closingTime).toDate(),
     specialHours: specialOperatingHours && specialOperatingHours[0].type ||
@@ -140,7 +140,7 @@ const parkWaitTimes = parks.map(park => {
   })
   .then(dbPark => {
     console.log('retrieved park from db', park, today, dbPark[0].id)
-    return knex('operatingHours').where({
+    return knex('operatingHour').where({
       theDate: today,
       parkId: dbPark[0].id
     })
@@ -150,7 +150,7 @@ const parkWaitTimes = parks.map(park => {
         console.log('retrieving from api and inserting...')
         return getParkSchedule(themePark)
         .then(schedule => insertOperatingHours(schedule, dbPark[0].id))
-        .then(() => knex('operatingHours').where({
+        .then(() => knex('operatingHour').where({
           theDate: today,
           parkId: dbPark[0].id
         }))
@@ -200,17 +200,13 @@ const parkWaitTimes = parks.map(park => {
             return [dbRide[0].id]
           })
           .then(dbRide => {
-            return knex('waitTimes').insert({
+            return knex('waitTime').insert({
               wait: ride.waitTime || 0,
               rideId: dbRide[0],
               lastUpdated: moment(ride.lastUpdate).toDate(),
               createdAt: moment().toDate(),
               updatedAt: moment().toDate(),
               status: ride.status,
-              fastPassStart: ride.fastPassReturnTime &&
-                moment(ride.fastPassReturnTime.startTime).toDate() || null,
-              fastPassEnd: ride.fastPassReturnTime &&
-                moment(ride.fastPassReturnTime.endTime).toDate() || null,
               temperature: currentWeather.temperature,
               humidity: currentWeather.humidity,
               conditions: currentWeather.skytext
