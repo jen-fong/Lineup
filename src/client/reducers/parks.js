@@ -14,7 +14,6 @@ export default function (state = initialState, action) {
         all: action.payload
       })
     case constants.SELECTION_SET:
-      console.log(action)
       return state.merge({
         ride: action.selection.id
       })

@@ -18,8 +18,32 @@
   overflow-x: hidden;
   overflow-y: auto;
 }
-
 .sidebar .nav-link {
   color: #f8f9fa;
   font-weight: 500;
+}
+.bg-dark-blue {
+  background-color: #32455E;
+  border-color: #32455E;
+}
+.nav-tabs {
+  border-bottom: 1px solid #32455E;
+}
+.nav-tabs .nav-link {
+  color: #f8f9fa;
+  border-color: #dee2e6;
+  border-bottom: 0;
+}
+.nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover, .nav-tabs.nav-link:not(.active):hover {
+  border-color: transparent;
+  background-color: #fff;
+  color: #495057;
+  cursor: pointer;
+}
+.border-bottom-dark {
+  border-bottom: 2px solid #32455E;
+}
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.border-top-dark {
+  border-color: #dee2e6;
+  border-top: 2px solid #32455E;
 }

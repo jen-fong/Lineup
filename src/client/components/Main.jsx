@@ -1,94 +1,103 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as ridesActions from '../actions/ridesActions.js'
-import AllWeekdaysStats from './dashboard/AllWeekdaysStats.jsx'
-import StatsByDate from './dashboard/StatsByDate.jsx'
-import WeekdayStats from './dashboard/WeekdayStats.jsx'
-import StatsByMonth from './dashboard/StatsByMonth.jsx'
+import AllView from './AllView.jsx'
+import MonthsView from './MonthsView.jsx'
+import WeekView from './WeekView.jsx'
+import DateView from './DateView.jsx'
 
-const colorsByIndex = [
-  '#396AB1',
-  '#DA7C30',
-  '#3E9651',
-  '#CC2529',
-  '#535154',
-  '#6B4C9A',
-  '#922428',
-  '#948B3D'
-]
-
-// do not use Object.keys since I did not order them in the db query properly
-const days = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday'
-]
-
-class Main extends React.PureComponent {
-  render () {
-    const {
-      weekdaysStats,
-      weekdaysStatsMax,
-      weekdaysStatsMin,
-      byDate,
-      ridesActions,
-      ride,
-      park,
-      monthsStats,
-      monthsStatsMax,
-      monthsStatsMin
-    } = this.props
-    const weekdays = Object.keys(weekdaysStats)
-    console.log('min', this.props)
-    return (
-      <div className='col-md-10 offset-md-2 mt-5'>
-        {!ride && !park && <p>Select a ride from the left to begin</p>}
-
-        {!!weekdays.length && (
-          <React.Fragment>
-            <div className='row mt-5'>
-              <StatsByDate
-                statsByDate={byDate}
-                ridesActions={ridesActions}
-                rideId={ride}
-                parkId={park}
-              />
-            </div>
-
-            <div className='row mt-5'>
-              <AllWeekdaysStats
-                allWeekdaysStats={weekdaysStats}
-                days={days}
-                colorsByIndex={colorsByIndex}
-              />
-            </div>
-
-            <div className='row mt-5'>
-              <WeekdayStats
-                stats={weekdaysStats}
-                statsMax={weekdaysStatsMax}
-                statsMin={weekdaysStatsMin}
-                days={days}
-              />
-            </div>
-
-            <div className='row mt-5'>
-              <StatsByMonth
-                stats={monthsStats}
-                statsMax={monthsStatsMax}
-                statsMin={monthsStatsMin}
-              />
-            </div>
-          </React.Fragment>
-        )}
-      </div>
-    )
+function getView (view) {
+  const views = {
+    all: AllView,
+    months: MonthsView,
+    week: WeekView,
+    date: DateView
   }
+  return views[view]
+}
+
+const Tab = props => {
+  const { text, view, handleTabClick, current } = props
+
+  function handleClick (e) {
+    e.preventDefault()
+    handleTabClick(view)
+  }
+
+  let classname = 'nav-link rounded-0'
+  if (current === view) {
+    classname = classname + ' active border-top-dark text-dark'
+  }
+  return (
+    <li className='nav-item bg-dark-blue'>
+      <a
+        className={classname}
+        aria-controls={text}
+        onClick={handleClick}
+        href='#'
+      >
+        {text}
+      </a>
+    </li>
+  )
+}
+
+const Main = props => {
+  const [view, setView] = useState('all')
+  const { ride, park } = props
+
+  if (!ride || !park) {
+    return (<div className='col-md-10 offset-md-2 mt-5'>
+      Select a ride from the left to begin
+    </div>)
+  }
+
+  function handleTabClick (view) {
+    setView(view)
+  }
+
+  const View = getView(view)
+  return (
+    <div className='container-fluid'>
+      <div className='row mt-5'>
+        <div className='col-md-10 offset-md-2'>
+          <ul className='nav nav-tabs' id='manageTabs' role='tablist'>
+            <Tab
+              text='All'
+              handleTabClick={handleTabClick}
+              view='all'
+              current={view}
+            />
+            <Tab
+              text='Months'
+              handleTabClick={handleTabClick}
+              view='months'
+              current={view}
+            />
+            <Tab
+              text='Week'
+              handleTabClick={handleTabClick}
+              view='week'
+              current={view}
+            />
+            <Tab
+              text='Date'
+              handleTabClick={handleTabClick}
+              view='date'
+              current={view}
+            />
+          </ul>
+
+          <div className='col-md-12 mt-5'>
+            <div className='tab-content' id='manageContent'>
+              <View {...props} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 // TODO move to selectors

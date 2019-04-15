@@ -14,7 +14,7 @@ import {
 
 function AllWeekdaysStats (props) {
   const {
-    allWeekdaysStats,
+    stats,
     days,
     colorsByIndex
   } = props
@@ -32,7 +32,7 @@ function AllWeekdaysStats (props) {
               return (
                 <LineMarkSeries
                   key={day}
-                  data={allWeekdaysStats[day]}
+                  data={stats[day]}
                   onValueMouseOver={openHint}
                   onValueMouseOut={removeHint}
                   curve='monotoneX'
