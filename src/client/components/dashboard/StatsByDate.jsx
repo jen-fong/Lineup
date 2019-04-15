@@ -1,7 +1,7 @@
 import React from 'react'
 import moment from 'moment'
 import GraphTitle from './GraphTitle.jsx'
-import useHint from './useHint.js'
+import HintHOC from './HintHOC.jsx'
 import DatePicker from 'react-datepicker'
 import {
   FlexibleXYPlot,
@@ -30,9 +30,8 @@ export class StatsByDate extends React.PureComponent {
     ridesActions.fetchStatsByDate(parkId, rideId, formattedDate)
   }
   render () {
-    const { statsByDate } = this.props
+    const { statsByDate, openHint, removeHint, hoveredCell } = this.props
     const { selectedDate } = this.state
-    const { openHint, removeHint, hoveredCell } = useHint()
 
     return (
       <div className='col-md-12'>
@@ -87,4 +86,4 @@ export class StatsByDate extends React.PureComponent {
   }
 }
 
-export default StatsByDate
+export default HintHOC(StatsByDate)

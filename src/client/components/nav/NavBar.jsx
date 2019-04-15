@@ -39,6 +39,7 @@ class NavBar extends React.PureComponent {
     parksActions.setSelection(option)
     ridesActions.fetchStatsForWeekdays(park, option.id)
     ridesActions.fetchStatsByDate(park, option.id, today)
+    ridesActions.fetchStatsForMonths(park, option.id)
   }
   render () {
     const { parksActions, ...props } = this.props

@@ -24,3 +24,14 @@ export const fetchStatsByDate = (parkId, rideId, date) => dispatch => {
     })
   })
 }
+
+export const fetchStatsForMonths = (parkId, rideId, month) => dispatch => {
+  return dispatch({
+    type: constants.RIDE_MONTHS_GET,
+    payload: request({
+      method: 'GET',
+      url: `/parks/${parkId}/rides/${rideId}/months`,
+      params: { month }
+    })
+  })
+}

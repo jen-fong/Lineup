@@ -1,127 +1,67 @@
-import React from 'react'
+import React, { useState } from 'react'
+import WithMaxAndMin from './WithMaxAndMin.jsx'
 import moment from 'moment'
 import Select from 'react-select'
-import GraphTitle from './GraphTitle.jsx'
-import useHint from './useHint.js'
-import {
-  FlexibleXYPlot,
-  LineMarkSeries,
-  XAxis,
-  YAxis,
-  HorizontalGridLines,
-  VerticalGridLines,
-  Hint,
-  DiscreteColorLegend
-} from 'react-vis'
 
-export class WeekdayStats extends React.PureComponent {
-  constructor (props) {
-    super(props)
-    const today = moment().format('dddd')
-    this.state = {
-      day: {
-        value: today,
-        label: today
-      }
-    }
+function returnHours (value) {
+  // only show as full hour
+  if (value % 1 === 0) {
+    return value
   }
-  handleDayChange = option => {
-    this.setState({
-      day: option
-    })
+}
+
+function displayCellInfo (hoveredCell) {
+  return [{
+    title: 'hour',
+    value: hoveredCell.x
+  }, {
+    title: 'wait time',
+    value: hoveredCell.y
+  }]
+}
+
+function WeekdayStats (props) {
+  const currentDay = moment().format('dddd')
+  let [selected, setSelected] = useState({
+    label: currentDay,
+    value: currentDay
+  })
+
+  function handleSelect (option) {
+    setSelected(option)
   }
-  render () {
-    const dayOption = this.state.day
-    const day = dayOption.value
-    const {
-      allWeekdaysStats,
-      allWeekdaysStatsMax,
-      allWeekdaysStatsMin,
-      days
-    } = this.props
-    const { openHint, removeHint, hoveredCell } = useHint()
+  const {
+    stats,
+    statsMax,
+    statsMin,
+    days
+  } = props
+  const selectedValue = selected.value
 
-    return (
-      <div className='col-md-12 mt-5'>
-        <div className='row'>
-          <div className='col-md-4'>
-            <Select
-              options={days.map(day => ({ label: day, value: day }))}
-              value={dayOption}
-              onChange={this.handleDayChange}
-            />
-          </div>
-        </div>
-
-        <div className='row'>
-          <div className='col-md-10'>
-            <GraphTitle title={`Wait Times Average for ${day}`} />
-            <FlexibleXYPlot height={600}>
-              <VerticalGridLines />
-              <HorizontalGridLines />
-
-              <LineMarkSeries
-                data={allWeekdaysStats[day]}
-                onValueMouseOver={openHint}
-                onValueMouseOut={removeHint}
-                curve='monotoneX'
-              />
-
-              <LineMarkSeries
-                data={allWeekdaysStatsMax[day]}
-                onValueMouseOver={openHint}
-                onValueMouseOut={removeHint}
-                curve='monotoneX'
-              />
-
-              <LineMarkSeries
-                data={allWeekdaysStatsMin[day]}
-                onValueMouseOver={openHint}
-                onValueMouseOut={removeHint}
-                curve='monotoneX'
-              />
-
-              <XAxis
-                title='Hour (24)'
-                tickFormat={value => {
-                  // only show as full hour
-                  if (value % 1 === 0) {
-                    return value
-                  }
-                }}
-              />
-              <YAxis title='Wait times (minutes)' />
-              {hoveredCell && (
-                <Hint
-                  value={hoveredCell}
-                  format={() => [{
-                    title: 'hour',
-                    value: hoveredCell.x
-                  }, {
-                    title: 'wait time',
-                    value: hoveredCell.y
-                  }]}
-                />
-              )}
-            </FlexibleXYPlot>
-          </div>
-
-          <div className='col-md-2 mt-5'>
-            <DiscreteColorLegend
-              width={250}
-              items={[{
-                title: 'average'
-              }, {
-                title: 'max'
-              }, {
-                title: 'min'
-              }]}
-            />
-          </div>
+  return (
+    <div className='col-md-12 mt-5'>
+      <div className='row'>
+        <div className='col-md-4'>
+          <Select
+            options={days.map(day => ({ label: day, value: day }))}
+            value={selected}
+            onChange={handleSelect}
+          />
         </div>
       </div>
-    )
-  }
+
+      <WithMaxAndMin
+        stats={stats[selectedValue]}
+        statsMax={statsMax[selectedValue]}
+        statsMin={statsMin[selectedValue]}
+        tickFormat={returnHours}
+        yTitle='Wait times (minutes)'
+        xTitle='Hour(24)'
+        hintFormat={displayCellInfo}
+        graphTitle={`Wait Times Average for ${selectedValue}`}
+      />
+    </div>
+  )
 }
 
 export default WeekdayStats

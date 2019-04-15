@@ -44,24 +44,6 @@ class ParkLink extends React.PureComponent {
                   name='ride'
                 />
               </li>
-
-              <li
-                className='nav-item'
-              >
-                <a
-                  className='nav-link'
-                  href='#'
-                >
-                  Days
-                </a>
-
-                {/* <SelectPicker
-                  options={park.rides}
-                  selectedOption={ride}
-                  handleChange={selectRide}
-                  name='day'
-                /> */}
-              </li>
             </ul>
           </Collapse>
         }
