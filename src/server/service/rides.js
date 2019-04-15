@@ -71,9 +71,8 @@ function fetchRideStatsByDate (query) {
 
 function fetchRideStatsByMonth (query) {
   const { rideId, month } = query
-  console.log(query)
   const monthQuery = getSearchQuery(month, 'month(operatingHour.theDate) = ?')
-  console.log(monthQuery)
+
   return knex('waitTime').select(knex.raw(
     'month(operatingHour.theDate) as month, ' +
     'avg(wait) as averageWait, ' +
@@ -93,10 +92,6 @@ function fetchRideStatsByMonth (query) {
   .andWhereRaw(...monthQuery)
   .groupByRaw('month(operatingHour.theDate)')
   .orderByRaw('month(operatingHour.theDate)')
-  .then(d => {
-    console.log(d)
-    return d
-  })
 }
 
 module.exports = {
