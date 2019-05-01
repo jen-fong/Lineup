@@ -1,7 +1,0 @@
-const config = require('config')
-const path = require('path')
-
-module.exports = {
-  migrationsDir: path.join(__dirname, 'src/server/database/migrations'),
-  dbConfig: config.get('database.connection')
-}

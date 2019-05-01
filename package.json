@@ -10,8 +10,8 @@
     "lint": "eslint . --ext=.js,.jsx",
     "test": "mocha --recursive src/server/tests --exit && jest",
     "concurrent": "concurrently 'nodemon index.js' 'npm run build:watch'",
-    "migrate": "sqlmigrate --any-order",
-    "migration:create": "sqlmigrate create --name=$*"
+    "migrate": "node migrate.js migrate",
+    "migration:create": "node migrate.js create $*"
   },
   "author": "",
   "license": "ISC",
