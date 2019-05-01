@@ -1,7 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import moment from 'moment'
 import GraphTitle from './GraphTitle.jsx'
-import HintHOC from './HintHOC.jsx'
 import DatePicker from 'react-datepicker'
 import {
   FlexibleXYPlot,
@@ -12,78 +11,73 @@ import {
   VerticalGridLines,
   Hint
 } from 'react-vis'
+import useHint from './useHint.js'
 
-export class StatsByDate extends React.PureComponent {
-  constructor (props) {
-    super(props)
-    this.state = {
-      selectedDate: moment()
-    }
-  }
-  handleDateChange = date => {
+function StatsByDate (props) {
+  const currentDate = moment()
+  let [selectedDate, setSelectedDate] = useState(currentDate)
+
+  function handleDateChange (date) {
     const { ridesActions, parkId, rideId } = this.props
-    this.setState({
-      selectedDate: moment(date)
-    })
+    const toDate = moment(date)
+    setSelectedDate(toDate)
     const formattedDate = moment(date).format('YYYY-MM-DD')
-
     ridesActions.fetchStatsByDate(parkId, rideId, formattedDate)
   }
-  render () {
-    const { statsByDate, openHint, removeHint, hoveredCell } = this.props
-    const { selectedDate } = this.state
 
-    return (
-      <div className='col-md-12'>
-        <div className='row'>
-          <div className='col-md-12'>
-            <h6>Select a Date</h6>
-            <DatePicker
-              onChange={this.handleDateChange}
-              selected={selectedDate.toDate()}
+  const { openHint, removeHint, hoveredCell } = useHint()
+  const { statsByDate } = props
+
+  return (
+    <div className='col-md-12'>
+      <div className='row'>
+        <div className='col-md-12'>
+          <h6>Select a Date</h6>
+          <DatePicker
+            onChange={handleDateChange}
+            selected={selectedDate.toDate()}
+          />
+
+          <GraphTitle
+            title={`Wait Times for ${selectedDate.format('YYYY-MM-DD')}`}
+          />
+          <FlexibleXYPlot height={600} xType='ordinal'>
+            <VerticalGridLines />
+            <HorizontalGridLines />
+
+            <LineMarkSeries
+              data={statsByDate}
+              onValueMouseOut={removeHint}
+              onValueMouseOver={openHint}
+              curve='monotoneX'
             />
 
-            <GraphTitle
-              title={`Wait Times for ${selectedDate.format('YYYY-MM-DD')}`}
+            <XAxis
+              title='Hour (24)'
+              tickLabelAngle={90}
+              tickFormat={value => {
+                const toTime = moment.utc(value).format('HH:mm')
+                return toTime
+              }}
             />
-            <FlexibleXYPlot height={600} xType='ordinal'>
-              <VerticalGridLines />
-              <HorizontalGridLines />
-
-              <LineMarkSeries
-                data={statsByDate}
-                onValueMouseOut={removeHint}
-                onValueMouseOver={openHint}
-                curve='monotoneX'
+            <YAxis title='Wait times (minutes)' />
+            {hoveredCell && (
+              <Hint
+                value={hoveredCell}
+                format={() => [{
+                  title: 'hour',
+                  value: moment.utc(hoveredCell.x).format('HH:mm')
+                }, {
+                  title: 'wait time',
+                  value: hoveredCell.y
+                }]}
               />
-
-              <XAxis
-                title='Hour (24)'
-                tickLabelAngle={90}
-                tickFormat={value => {
-                  const toTime = moment.utc(value).format('HH:mm')
-                  return toTime
-                }}
-              />
-              <YAxis title='Wait times (minutes)' />
-              {hoveredCell && (
-                <Hint
-                  value={hoveredCell}
-                  format={() => [{
-                    title: 'hour',
-                    value: moment.utc(hoveredCell.x).format('HH:mm')
-                  }, {
-                    title: 'wait time',
-                    value: hoveredCell.y
-                  }]}
-                />
-              )}
-            </FlexibleXYPlot>
-          </div>
+            )}
+          </FlexibleXYPlot>
         </div>
       </div>
-    )
-  }
+    </div>
+  )
 }
 
-export default HintHOC(StatsByDate)
+export default StatsByDate

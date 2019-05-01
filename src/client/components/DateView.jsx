@@ -1,5 +1,5 @@
 import React from 'react'
-import { StatsByDate } from './dashboard/StatsByDate.jsx'
+import StatsByDate from './dashboard/StatsByDate.jsx'
 
 function DateView (props) {
   const {
