@@ -64,7 +64,8 @@ function fetchRideStatsByDate (query) {
   .whereRaw('rideId = ?', [rideId])
   .andWhere('waitTime.status', '=', 'Operating')
   .andWhereRaw(
-    'convert_tz(waitTime.createdAt, "+00:00", "America/New_York") like ?', [dateQuery]
+    'convert_tz(waitTime.createdAt, "+00:00", "America/New_York")' +
+    'like ?', [dateQuery]
   )
   .orderBy('waitTime.createdAt', 'asc')
 }
