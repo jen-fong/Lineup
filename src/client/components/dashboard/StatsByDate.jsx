@@ -13,12 +13,14 @@ import {
 } from 'react-vis'
 import useHint from './useHint.js'
 
+const today = moment().toDate()
+
 function StatsByDate (props) {
   const currentDate = moment()
   let [selectedDate, setSelectedDate] = useState(currentDate)
 
   function handleDateChange (date) {
-    const { ridesActions, parkId, rideId } = this.props
+    const { ridesActions, parkId, rideId } = props
     const toDate = moment(date)
     setSelectedDate(toDate)
     const formattedDate = moment(date).format('YYYY-MM-DD')
@@ -27,7 +29,7 @@ function StatsByDate (props) {
 
   const { openHint, removeHint, hoveredCell } = useHint()
   const { statsByDate } = props
-
+  console.log(moment())
   return (
     <div className='col-md-12'>
       <div className='row'>
@@ -36,6 +38,8 @@ function StatsByDate (props) {
           <DatePicker
             onChange={handleDateChange}
             selected={selectedDate.toDate()}
+            maxDate={today}
+            showDisabledMonthNavigation
           />
 
           <GraphTitle
