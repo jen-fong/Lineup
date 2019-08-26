@@ -18,6 +18,7 @@ function getView (view) {
   return views[view]
 }
 
+// TODO use reactstrap tabs
 const Tab = props => {
   const { text, view, handleTabClick, current } = props
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Collapse } from 'reactstrap'
-import SelectPicker from '../SelectPicker.jsx'
+import Select from 'react-select'
 
 class ParkLink extends React.PureComponent {
   setPark = () => {
@@ -20,8 +20,8 @@ class ParkLink extends React.PureComponent {
           href='#'
           onClick={this.setPark}
         >
-          {park.shortName}&nbsp;&nbsp;
-          <i className='fa fa-caret-down' />
+          {park.shortName}
+          <i className='fa fa-caret-down ml-1' />
         </a>
 
         {isOpen &&
@@ -37,12 +37,16 @@ class ParkLink extends React.PureComponent {
                   Rides
                 </a>
 
-                <SelectPicker
-                  options={park.rides}
-                  selectedOption={selection}
-                  handleChange={setRideSelection}
-                  name='ride'
-                />
+                <div className='col-md-12'>
+                  <Select
+                    name='ride'
+                    options={park.rides.asMutable()}
+                    value={selection}
+                    onChange={setRideSelection}
+                    getOptionLabel={option => option.name}
+                    getOptionValue={option => option.id}
+                  />
+                </div>
               </li>
             </ul>
           </Collapse>

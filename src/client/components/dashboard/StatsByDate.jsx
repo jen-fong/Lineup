@@ -17,19 +17,19 @@ const today = moment().toDate()
 
 function StatsByDate (props) {
   const currentDate = moment()
-  let [selectedDate, setSelectedDate] = useState(currentDate)
+  let [selectedDate, setDate] = useState(currentDate)
 
   function handleDateChange (date) {
     const { ridesActions, parkId, rideId } = props
     const toDate = moment(date)
-    setSelectedDate(toDate)
+    setDate(toDate)
     const formattedDate = moment(date).format('YYYY-MM-DD')
     ridesActions.fetchStatsByDate(parkId, rideId, formattedDate)
   }
 
   const { openHint, removeHint, hoveredCell } = useHint()
   const { statsByDate } = props
-  console.log(moment())
+
   return (
     <div className='col-md-12'>
       <div className='row'>

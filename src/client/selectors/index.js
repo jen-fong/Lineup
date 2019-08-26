@@ -11,7 +11,6 @@ function createXY (data, xKey, yKey) {
   })
 }
 
-// converts an array of objects to object given parameters
 function xyByKey (data, xKey, yKey, useKey) {
   return data.reduce((accum, item) => {
     const useAsKey = item[useKey]
