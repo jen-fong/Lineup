@@ -33,22 +33,21 @@ function promiseifyWeather () {
 }
 
 function getParkSchedule (themePark) {
-  return themePark.FetchOpeningTimes()
-  .then(() => {
-    const scheduleSymbols = Object.getOwnPropertySymbols(themePark.Schedule)
-    const operatingHours = themePark.Schedule[scheduleSymbols[0]]
+  return themePark.GetOpeningTimes()
+  .then(operatingHours => {
     // the first item should be from today but it seems occasionally I get
     // data from the day before when it is 12 am
     // this ensures the data is for today by matching up the dates
     // of operation with the current date
     const todaysSchedule = Array.from(operatingHours).filter(schedule => {
-      if (schedule[1].date === today) {
+      if (schedule.date === today) {
         return schedule
       }
     })[0]
-    const specialOperatingHours = themePark.Schedule[scheduleSymbols[1]].get(
-      todaysSchedule[0])
-    const { openingTime, closingTime } = todaysSchedule[1]
+
+    const specialOperatingHours = todaysSchedule.special &&
+      todaysSchedule.special[0]
+    const { openingTime, closingTime } = todaysSchedule
 
     return {
       openingTime,
@@ -64,12 +63,12 @@ function insertOperatingHours (schedule, parkId) {
   return knex('operatingHour').insert({
     parkOpen: moment(openingTime).toDate(),
     parkClose: moment(closingTime).toDate(),
-    specialHours: specialOperatingHours && specialOperatingHours[0].type ||
+    specialHours: specialOperatingHours && specialOperatingHours.type ||
       null,
     specialHoursOpen: specialOperatingHours &&
-      moment(specialOperatingHours[0].openingTime).toDate(),
+      moment(specialOperatingHours.openingTime).toDate(),
     specialHoursClose: specialOperatingHours &&
-      moment(specialOperatingHours[0].closingTime).toDate(),
+      moment(specialOperatingHours.closingTime).toDate(),
     theDate: today,
     parkId: parkId,
     createdAt: moment().toDate(),
@@ -173,8 +172,8 @@ const parkWaitTimes = parks.map(park => {
           })
           .then(dbRide => {
             const rideType = determineRideType(ride)
-            // only insert if ride does not exist and if ride is active at park
-            if (!dbRide || !dbRide.length && ride.active) {
+            // only insert if ride does not exist
+            if (!dbRide || !dbRide.length) {
               return knex('ride').insert({
                 name: ride.name,
                 libId: ride.id,
