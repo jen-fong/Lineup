@@ -226,8 +226,10 @@ promiseifyWeather()
   currentWeather = weather[0].current
 })
 .then(() => Promise.all(parkWaitTimes))
-.then(() => knex.destroy())
+.then(() => knex.destroy()) // need to explicitly close connection
+.then(() => process.exit(0)) // and shut down process just in case since recently, it does not close down properly
 .catch(e => {
   console.log(e)
-  knex.destroy()
+  return knex.destroy()
+  .then(() => process.exit())
 })
