@@ -45,7 +45,7 @@
     "seamless-immutable": "^7.1.4",
     "sql": "^0.78.0",
     "sqlmigrate": "^2.1.0",
-    "themeparks": "^4.7.17",
+    "themeparks": "^5.1.15",
     "weather-js": "^2.0.0"
   },
   "devDependencies": {
