@@ -24,7 +24,7 @@
     "express-handlebars": "^3.0.2",
     "font-awesome": "^4.7.0",
     "knex": "^0.16.5",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "moment-timezone": "^0.5.25",
     "mysql": "^2.17.1",
     "mysql2": "^1.6.5",
